@@ -42,8 +42,6 @@ labels = db.labels_
 
 # Number of clusters in labels, ignoring noise if present.
 n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-old_count = new_count
-new_count = n_clusters_
 
 # Cleaning up labels for iteration
 unique_labels = np.unique(labels)
@@ -61,7 +59,7 @@ for label in unique_labels:
     index = labels == label
     store[label] = X[index]
 
-# DBSCAN clusters
+# DBSCAN clusters added together to single components
 mean_store = {}
 for key in store.keys():
     mean_store[key] = get_mean_bubble(store[key], score)
