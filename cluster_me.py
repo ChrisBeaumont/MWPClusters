@@ -89,7 +89,7 @@ while (exit<3):
 ##############################################################################
 # Plot result
 print('Drawing output...')
-import pylab as pl
+import matplotlib.pyplot as pl
 from pylab import figure, show, rand
 from matplotlib.patches import Ellipse
 
