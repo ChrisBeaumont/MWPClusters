@@ -94,7 +94,7 @@ from pylab import figure, show, rand
 from matplotlib.patches import Ellipse
 
 ## Create 'canvas' for map
-fig = figure(figsize=(7,7), dpi=300)
+fig = pl.figure(figsize=(7,7), dpi=300)
 ax = fig.add_subplot(111, aspect='equal')
 ax.set_xlim(x2, x1)
 ax.set_ylim(y1, y2)
@@ -120,5 +120,6 @@ for x in bubble_list:
 
 ts = time.time()
 stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
-pl.savefig("output/test"+stamp+".png", dpi=300)
+pl.savefig("output/test"+stamp+".png", dpi=300, bbox_inches='tight')
+pl.close()
 
