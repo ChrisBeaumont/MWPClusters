@@ -4,7 +4,7 @@ import math
 import random
 import time
 import datetime
-# import pandas
+import pandas as pd 
 
 from sklearn.cluster import DBSCAN
 from sklearn import metrics
@@ -25,6 +25,7 @@ def get_mean_bubble(data, score):
 
 # Import data from CSV
 path_to_csv = "sample_bubbles.csv"
+df = pd.read_csv(path_to_csv)
 bubbles = np.genfromtxt(path_to_csv, dtype=float, delimiter=',')
 
 X = np.delete(bubbles, 0, 0)
@@ -40,19 +41,22 @@ exit_test=0
 old_count = 0
 new_count = 1
 # while (exit_test<3):
-while (i<10):
+while (i<5):
     # Compute DBSCAN
     if i==0:
         lim=3
     else:
         lim=1
 
-    print('Redoing DBSCAN on new data', X.shape)
+    # print('Redoing DBSCAN on new data', X.shape)
+    if i > 0: 
+        print heck
     B = np.column_stack([ X[:, 0], X[:, 1], X[:, 0]/(X[:, 2]/2.0), X[:, 1]/(X[:, 3]/2.0), (X[:, 4]/X[:, 2])/0.5, X[:, 5]/45 ])
-    db = DBSCAN(eps=.5, min_samples=lim).fit(B)
+    db = DBSCAN(eps=10 / (i + 1.), min_samples=lim).fit(B)
     core_samples = db.core_sample_indices_
     components = db.components_
     labels = db.labels_
+    del(db)
 
     # Number of clusters in labels, ignoring noise if present.
     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
@@ -76,7 +80,6 @@ while (i<10):
     # defined cluster. 
     store = {}
     for label in unique_labels:
-
         # Creating index where N == n, where n -> 0, 1, 2, ..., j
         index = labels == label
         store[label] = X[index]
@@ -84,34 +87,6 @@ while (i<10):
     mean_store = {}
     for key in store.keys():
         mean_store[key] = get_mean_bubble(store[key], score)
-
-
-
-
-
-
-    # bubble_list = []
-    # for k in unique_labels:
-    #     class_members = [index[0] for index in np.argwhere(labels == k)]
-    #     cluster_core_samples = [index for index in core_samples if labels[index] == k]
-    #     first = 1
-    #     for index in class_members:
-    #         if k != -1:
-    #             if first==0:
-    #                 ce = np.column_stack([ce, X[index]])
-    #                 print('first is 0', ce)
-
-    #             else:
-    #                 ce = np.column_stack([X[index]])
-    #                 print('first is 1', ce)
-
-    #                 first = 0
-        
-    #     score = np.sum(ce[6, :])
-    #     if score >= 10:
-    #         # print('Node of %d drawings and score %d with std_dev %f' % (ce[1, :].size, score, np.std(ce[0, :])))
-    #         newb = get_mean_bubble(ce, score)
-    #         bubble_list.append(newb)
 
     X = np.row_stack(mean_store.values())
     # X = np.array()
