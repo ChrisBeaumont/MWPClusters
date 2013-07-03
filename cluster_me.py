@@ -63,9 +63,10 @@ for key in store.keys():
 X = np.row_stack(mean_store.values())
 
 #### This is where we need to include the next clustering algorithm. ####
-bandwidth = estimate_bandwidth(X, quantile=0.05, n_samples=500)
+X2 = np.column_stack([ X[:,0], X[:,1], X[:,2], X[:,3] ])
+bandwidth = estimate_bandwidth(X2, quantile=0.05, n_samples=1000)
 ms = MeanShift(bandwidth=bandwidth, bin_seeding=True)
-ms.fit(X)
+ms.fit(X2)
 labels = ms.labels_
 cluster_centers = ms.cluster_centers_
 
