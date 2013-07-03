@@ -4,7 +4,7 @@ import math
 import random
 import time
 import datetime
-import pandas as pd 
+# import pandas
 
 from sklearn.cluster import DBSCAN
 from sklearn import metrics
@@ -25,7 +25,6 @@ def get_mean_bubble(data, score):
 
 # Import data from CSV
 path_to_csv = "sample_bubbles.csv"
-df = pd.read_csv(path_to_csv)
 bubbles = np.genfromtxt(path_to_csv, dtype=float, delimiter=',')
 
 X = np.delete(bubbles, 0, 0)
@@ -33,65 +32,50 @@ Xraw = X
 x1, x2 = min(X[:, 0]), max(X[:, 0])
 y1, y2 = min(X[:, 1]), max(X[:, 1])
 
-# Xp = np.column_stack([ X[:, 0]/0.1, X[:, 1]/0.1, X[:, 2]/0.01, X[:, 3]/0.01, X[:, 5]/30 ])
 
-bubble_list = []
-i = 0
-exit_test=0
-old_count = 0
-new_count = 1
-# while (exit_test<3):
-while (i<5):
-    # Compute DBSCAN
-    if i==0:
-        lim=3
-    else:
-        lim=1
+# DBSCAN component
+B = np.column_stack([ X[:, 0], X[:, 1], X[:, 0]/(X[:, 2]/2.0), X[:, 1]/(X[:, 3]/2.0), (X[:, 4]/X[:, 2])/0.5, X[:, 5]/45 ])
+db = DBSCAN(eps=1, min_samples=lim).fit(B)
+core_samples = db.core_sample_indices_
+components = db.components_
+labels = db.labels_
 
-    # print('Redoing DBSCAN on new data', X.shape)
-    if i > 0: 
-        print heck
-    B = np.column_stack([ X[:, 0], X[:, 1], X[:, 0]/(X[:, 2]/2.0), X[:, 1]/(X[:, 3]/2.0), (X[:, 4]/X[:, 2])/0.5, X[:, 5]/45 ])
-    db = DBSCAN(eps=10 / (i + 1.), min_samples=lim).fit(B)
-    core_samples = db.core_sample_indices_
-    components = db.components_
-    labels = db.labels_
-    del(db)
+# Number of clusters in labels, ignoring noise if present.
+n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+old_count = new_count
+new_count = n_clusters_
 
-    # Number of clusters in labels, ignoring noise if present.
-    n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-    old_count = new_count
-    new_count = n_clusters_
-    if old_count == new_count:
-        exit_test+=1
-    else:
-        exit_test=0
-    print('Iteration %d predicting %d nodes (delta=%d)' % (i, new_count, (new_count-old_count)))
+# Cleaning up labels for iteration
+unique_labels = np.unique(labels)
+unique_labels = labels[labels > -1]
+# unique_labels = np.sort(unique_labels)[1::]
 
-    # Cleaning up labels for iteration
-    unique_labels = np.unique(labels)
-    unique_labels = labels[labels > -1]
-    # unique_labels = np.sort(unique_labels)[1::]
+# For now, score is set to 10 by default
+score = 10
 
-    # For now, score is set to 10 by default
-    score = 10
+# store is a dictionary that holds all the bubble members of each DBSCAN
+# defined cluster. 
+store = {}
+for label in unique_labels:
+    # Creating index where N == n, where n -> 0, 1, 2, ..., j
+    index = labels == label
+    store[label] = X[index]
 
-    # store is a dictionary that holds all the bubble members of each DBSCAN
-    # defined cluster. 
-    store = {}
-    for label in unique_labels:
-        # Creating index where N == n, where n -> 0, 1, 2, ..., j
-        index = labels == label
-        store[label] = X[index]
+# DBSCAN clusters
+mean_store = {}
+for key in store.keys():
+    mean_store[key] = get_mean_bubble(store[key], score)
 
-    mean_store = {}
-    for key in store.keys():
-        mean_store[key] = get_mean_bubble(store[key], score)
+X = np.row_stack(mean_store.values())
 
-    X = np.row_stack(mean_store.values())
-    # X = np.array()
-    print('X length is', X.shape)
-    i+=1
+#### This is where we need to include the next clustering algorithm. ####
+##
+##
+##
+##
+
+
+
 
 ##############################################################################
 # Plot result
@@ -117,7 +101,7 @@ colors = pl.cm.Spectral(np.linspace(0, 1, len(unique_labels)))
 #     e.set_facecolor([0.1, 0.1, 0.1])
 #     ax.add_artist(e)
 
-#Plot final list
+# Plot final list
 iter_mean_store = mean_store.itervalues()
 
 for x in iter_mean_store:
