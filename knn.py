@@ -2,6 +2,10 @@ import numpy as np
 from scipy import spatial
 
 
+# Testing
+# Import data from CSV
+path_to_csv = "sample_bubbles.csv"
+bubbles = np.genfromtxt(path_to_csv, dtype=float, delimiter=',')
 
 def knn4bubbles(xys, dxys):
 	"""
@@ -17,11 +21,6 @@ def knn4bubbles(xys, dxys):
 	# Vertical splitting
 	x, y, s = np.vsplit(xys, 3)
 	xy = np.column_stack([x, y])
-	xytemp = np.copy(xy)
-
-
-	# Need to store which bubbles are merged and not
-	merged = []
 
 	i = 0
 	stop = False
@@ -29,8 +28,15 @@ def knn4bubbles(xys, dxys):
 		# Generating tree
 		tree = spatial.KDTree(np.array(xy))
 
-		distance, index = tree.query(xytemp[i])
+		# Querying tree for nearest neighbours within distance of bubble radius
+		distance, index = tree.query(xy[i], distance_upper_bound=s[i], k=20)
+
+		if distance.shape[0] > 1:
+			pass
+			# Here we need to include merging algorithm from cluster_me [weight means]
+
 
 		i += 1
+	
 	if len(xy) <= 1:
 		stop == True
