@@ -7,11 +7,30 @@ def knn4bubbles(xys, dxys):
 	"""
 	Required
 
-	*xys:* [list | np.array] 
-		A list or np.array of coordinates in x, y and size.
+	*xys:* [np.array] 
+		An np.array of coordinates in x, y and size.
 
-	*dxys:* [list | np.array]
-		A list or np.array of accompanying widths (a.k.a. errors). 
+	*dxys:* [np.array]
+		An np.array of accompanying errors. 
 	"""
-	tree = spatial.KDTree(np.array(xys))
-	for i in xrange(len(xys)):
+
+	# Vertical splitting
+	x, y, s = np.vsplit(xys, 3)
+	xy = np.column_stack([x, y])
+	xytemp = np.copy(xy)
+
+
+	# Need to store which bubbles are merged and not
+	merged = []
+
+	i = 0
+	stop = False
+	while stop == False:
+		# Generating tree
+		tree = spatial.KDTree(np.array(xy))
+
+		distance, index = tree.query(xytemp[i])
+
+		i += 1
+	if len(xy) <= 1:
+		stop == True
