@@ -55,7 +55,7 @@ for label in unique_labels:
     index = labels == label
     store[label] = X[index]
 
-# DBSCAN clusters
+# DBSCAN clusters added together to single components
 mean_store = {}
 for key in store.keys():
     mean_store[key] = get_mean_bubble(store[key])
