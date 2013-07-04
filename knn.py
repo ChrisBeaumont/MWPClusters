@@ -33,7 +33,6 @@ def knn4bubbles(xys, dxys):
 
 		if distance.shape[0] > 1:
 			pass
-			# Here we need to include merging algorithm from cluster_me [weight means]
 
 
 		i += 1
