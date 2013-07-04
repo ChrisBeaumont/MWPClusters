@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import spatial
 
+
 # Testing
 # Import data from CSV
 path_to_csv = "sample_bubbles.csv"
@@ -18,7 +19,7 @@ def knn4bubbles(data):
 	"""
 
 	s = np.sqrt(data[:,2] ** 2 + data[:,3] ** 2)
-	xys = np.column_stack([data[:,0], data[:,1], s, data[:,2], data[:,3], data[:,4], data[:,5]])
+	xys = np.column_stack([data[:,0], data[:,1], s])
 
 	i = 0
 	container = {}
@@ -67,7 +68,6 @@ def knn4bubbles(data):
 		if xys.shape[0] < 2:
 			for bubbles in container.itervalues():
 				mbubbles.append(np.mean(bubbles, axis=0))
-			print mbubbles
 			return np.array(mbubbles)
 
 
@@ -93,7 +93,7 @@ if test:
 
 	#Plot raw data
 	for xys in data:
-	    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[5])
+	    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[2], angle=0)
 	    e.set_clip_box(ax.bbox)
 	    e.set_alpha(0.1)
 	    e.set_facecolor('black')
@@ -102,7 +102,7 @@ if test:
 
 	# Plot cluster list
 	for xys in d:
-	    e = Ellipse(xy=[xys[0], xys[1]], width=xys[3], height=xys[4], angle=xys[6])
+	    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[2], angle=0)
 	    e.set_clip_box(ax.bbox)
 	    e.set_alpha(1)
 	    e.set_facecolor([0.1, 0.1, 0.1])
