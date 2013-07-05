@@ -7,11 +7,11 @@ import numpy as np
 from scipy import spatial
 from sklearn.cluster import DBSCAN
 
-def dbscan4bubbles(X):
+def dbscan4bubbles(X,freedom_pos,freedom_size, freedom_rot):
 	
 	### DBSCAN META PARAMETERS
 	# B = np.column_stack([ X[:, 0]/0.5, X[:, 1]/0.5, X[:, 0]/X[:, 2], X[:, 1]/X[:, 3], (X[:, 4]/X[:, 2])/0.33, X[:, 5]/45 ])
-	B = np.column_stack([ X[:, 0]/0.5, X[:, 1]/0.5, (X[:, 0]/X[:, 2])/0.5, (X[:, 1]/X[:, 3])/0.5, (X[:, 4]/X[:,2])/0.5, X[:, 5]/45 ])
+	B = np.column_stack([ X[:, 0]/freedom_pos, X[:, 1]/freedom_pos, (X[:, 0]/X[:, 2])/freedom_size, (X[:, 1]/X[:, 3])/freedom_size, (X[:, 4]/X[:,2])/freedom_size, X[:, 5]/freedom_rot ])
 	###
 
 	db = DBSCAN(eps=1, min_samples=3).fit(B)
@@ -53,7 +53,7 @@ def knn4bubbles(data):
 	"""
 
 	s = np.sqrt(data[:,2] ** 2 + data[:,3] ** 2)
-	xys = np.column_stack([data[:,0], data[:,1], s, data[:,2], data[:,3], data[:,4], data[:,5]])
+	xys = np.column_stack([data[:,0], data[:,1], data[:,2], data[:,3], data[:,4], data[:,5], data[:,6], s])
 
 	i = 0
 	container = {}
@@ -62,14 +62,14 @@ def knn4bubbles(data):
 	# while i < 125:
 
 		# Formatting arrays
-		x, y, s = xys[:,0], xys[:,1], xys[:,2]
+		x, y, s = xys[:,0], xys[:,1], xys[:,7]
 		xy = np.column_stack([x, y])
 
 		# Generating tree
 		tree = spatial.KDTree(np.array(xy))
 
 		# Querying tree for nearest neighbours within distance of bubble radius
-		distance, index = tree.query(xy[0], distance_upper_bound=s[0]/3., k=20)
+		distance, index = tree.query(xy[0], distance_upper_bound=s[0]/2., k=20)
 
 		# Comparing bubble sizes and indexing
 		sizes_ratio = s * 1.0 / s[0]
@@ -100,7 +100,8 @@ def knn4bubbles(data):
 		mbubbles = []
 		if xys.shape[0] < 2:
 			for bubbles in container.itervalues():
-				mbubbles.append(np.mean(bubbles, axis=0))
+				# mbubbles.append(np.mean(bubbles, axis=0))
+				mbubbles.append(get_mean_bubble(bubbles))
 			return np.array(mbubbles)
 
 def w_mean(data, x_index, w_index):
@@ -117,53 +118,79 @@ def get_mean_bubble(data):
     return np.array([lon, lat, width, height, thick, angle, score])
 
 # Import data from CSV
-path_to_csv = "sample_bubbles.csv"
+path_to_csv = "bubbles_19.csv"
 bubbles = np.genfromtxt(path_to_csv, dtype=float, delimiter=',')
 
 X = np.delete(bubbles, 0, 0)
-Xraw = X
+user_drawings = X
 x1, x2 = min(X[:, 0]), max(X[:, 0])
 y1, y2 = min(X[:, 1]), max(X[:, 1])
 
-data = dbscan4bubbles(X)
-d = knn4bubbles(data)
+ls = [5,4,3,2,1,0.5,0.25,0.1]
+ss = [0.1,0.25,0.5,1]
+rs = [30,45,60,90]
 
-print('Drawing output...')
-import matplotlib.pylab as pl
-from pylab import figure, show, rand
-from matplotlib.patches import Ellipse
-import time
-import datetime
+for l in ls:
+	for s in ss:
+		for r in rs:
+			print(l,s,r)
+			data = dbscan4bubbles(X,0.5,0.5,45)
+			d = knn4bubbles(data)
 
-## Create 'canvas' for map
-fig = pl.figure(figsize=(7, 7))
-ax = fig.add_subplot(111, aspect='equal')
-ax.set_xlim(data[:,0].max()+0.2, data[:,0].min()-0.2)
-ax.set_ylim(-1, 1)
+			print('Drawing output...')
+			import matplotlib.pylab as pl
+			from pylab import figure, show, rand
+			from matplotlib.patches import Ellipse
+			import time
+			import datetime
 
-#Plot raw data
-for xys in data:
-    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[5])
-    e.set_clip_box(ax.bbox)
-    e.set_alpha(0.1)
-    e.set_facecolor('black')
-    e.set_edgecolor('none')
-    ax.add_artist(e)
+			## Create 'canvas' for map
+			fig = pl.figure(figsize=(7, 7))
+			ax = fig.add_subplot(111, aspect='equal')
+			ax.set_xlim(data[:,0].max()+0.2, data[:,0].min()-0.2)
+			ax.set_ylim(-1, 1)
 
-# Plot cluster list
-for xys in d:
-    e = Ellipse(xy=[xys[0], xys[1]], width=xys[3], height=xys[4], angle=xys[6])
-    e.set_clip_box(ax.bbox)
-    e.set_alpha(1)
-    e.set_facecolor([0.1, 0.1, 0.1])
-    e.set_facecolor('none')
-    e.set_edgecolor('red')
-    # e.set_lw(3)
-    ax.add_artist(e)
+			#Plot original data
+			for xys in user_drawings:
+			    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[5])
+			    e.set_clip_box(ax.bbox)
+			    e.set_alpha(0.01)
+			    e.set_facecolor('black')
+			    e.set_edgecolor('none')
+			    ax.add_artist(e)
 
-# pl.show()
-ts = time.time()
-stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
-pl.savefig("output/knn_test_"+stamp+".png", dpi=300, bbox_inches='tight')
-pl.close()
+			#Plot DBSCAN data
+			for xys in data:
+			    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[5])
+			    e.set_clip_box(ax.bbox)
+			    e.set_alpha(0.33)
+			    e.set_facecolor('blue')
+			    e.set_edgecolor('none')
+			    ax.add_artist(e)
+
+			# Plot KNN-clustered bubbles
+			for xys in d:
+			    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[5])
+			    e.set_clip_box(ax.bbox)
+			    e.set_alpha(1)
+			    e.set_facecolor([0.1, 0.1, 0.1])
+			    e.set_facecolor('none')
+			    e.set_edgecolor('red')
+			    # e.set_lw(3)
+			    ax.add_artist(e)
+			for xys in d:
+			    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2]+xys[4], height=xys[3]+xys[4], angle=xys[5])
+			    e.set_clip_box(ax.bbox)
+			    e.set_alpha(0.8)
+			    e.set_facecolor([0.1, 0.1, 0.1])
+			    e.set_facecolor('none')
+			    e.set_edgecolor('red')
+			    # e.set_lw(3)
+			    ax.add_artist(e)
+
+			# pl.show()
+			ts = time.time()
+			stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
+			pl.savefig("output/knn_test_"+str(l)+"_"+str(s)+"_"+str(r)+"_19.png", dpi=300, bbox_inches='tight')
+			pl.close()
 
