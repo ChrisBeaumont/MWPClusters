@@ -1,8 +1,6 @@
 import numpy as np
 from scipy import spatial
 
-
-# Testing
 # Import data from CSV
 path_to_csv = "sample_bubbles.csv"
 bubbles = np.genfromtxt(path_to_csv, dtype=float, delimiter=',')

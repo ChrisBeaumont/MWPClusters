@@ -39,7 +39,7 @@ def dbscan4bubbles(X):
 	for key in store.keys():
 	    mean_store[key] = get_mean_bubble(store[key])
 
-	data = np.row_stack(mean_store.values())
+	return np.row_stack(mean_store.values())
 
 def knn4bubbles(data):
 	"""
@@ -72,7 +72,6 @@ def knn4bubbles(data):
 		distance, index = tree.query(xy[0], distance_upper_bound=s[0]/3., k=20)
 
 		# Comparing bubble sizes and indexing
-		# print(s)
 		sizes_ratio = s * 1.0 / s[0]
 		upper = sizes_ratio < 1.5
 		lower = sizes_ratio > 0.5
