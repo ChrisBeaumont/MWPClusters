@@ -3,6 +3,8 @@ import math
 import random
 import time
 import datetime
+import pymysql
+
 import numpy as np
 from scipy import spatial
 from sklearn.cluster import DBSCAN
@@ -118,17 +120,36 @@ def get_mean_bubble(data):
     return np.array([lon, lat, width, height, thick, angle, score])
 
 # Import data from CSV
-path_to_csv = "bubbles_19.csv"
-bubbles = np.genfromtxt(path_to_csv, dtype=float, delimiter=',')
+# path_to_csv = "bubbles_26.csv"
+# bubbles = np.genfromtxt(path_to_csv, dtype=float, delimiter=',')
+
+# MySQL start...
+lat_c = 25
+lat_range = 2
+db = pymysql.connect(host="localhost", user="root", passwd="", db="milkyway-development")
+cur = db.cursor() 
+sql = "SELECT lon, lat, (inner_x_diameter*pixel_scale) as width, (inner_y_diameter*pixel_scale) as height, ((outer_x_diameter-inner_x_diameter)*pixel_scale) as thickness, (angle % 90) as angle, score as score, pixel_scale as scale FROM bubbles, zooniverse_users WHERE bubbles.user_id = zooniverse_user_id AND lon BETWEEN "+str(lat_c-lat_range/2)+" AND "+str(lat_c+lat_range/2)+" AND (inner_x_diameter*pixel_scale) > 0 AND (inner_y_diameter*pixel_scale) > 0 AND score > 2;"
+cur.execute(sql)
+sqlres = []
+for row in cur.fetchall():
+	sqlres.append(row)
+
+db.close()
+bubbles = np.array(sqlres)
+bubbles = bubbles.astype(np.float)
 
 X = np.delete(bubbles, 0, 0)
 user_drawings = X
 x1, x2 = min(X[:, 0]), max(X[:, 0])
 y1, y2 = min(X[:, 1]), max(X[:, 1])
 
-ls = [5,4,3,2,1,0.5,0.25,0.1]
-ss = [0.1,0.25,0.5,1]
-rs = [30,45,60,90]
+# ls = [5,4,3,2,1,0.5,0.25,0.1]
+# ss = [0.1,0.25,0.5,1]
+# rs = [30,45,60,90]
+
+ls = [0.5]
+ss = [0.2]
+rs = [45]
 
 for l in ls:
 	for s in ss:
@@ -191,6 +212,6 @@ for l in ls:
 			# pl.show()
 			ts = time.time()
 			stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
-			pl.savefig("output/knn_test_"+str(l)+"_"+str(s)+"_"+str(r)+"_19.png", dpi=300, bbox_inches='tight')
+			pl.savefig("output/cluster_me_"+str(lat_c)+"_"+str(l)+"_"+str(s)+"_"+str(r)+"_"+stamp+".png", dpi=300, bbox_inches='tight')
 			pl.close()
 
