@@ -126,9 +126,10 @@ def get_mean_bubble(data):
 # MySQL start...
 lat_c = 25
 lat_range = 2
+score = 4
 db = pymysql.connect(host="localhost", user="root", passwd="", db="milkyway-development")
 cur = db.cursor() 
-sql = "SELECT lon, lat, (inner_x_diameter*pixel_scale) as width, (inner_y_diameter*pixel_scale) as height, ((outer_x_diameter-inner_x_diameter)*pixel_scale) as thickness, (angle % 90) as angle, score as score, pixel_scale as scale FROM bubbles, zooniverse_users WHERE bubbles.user_id = zooniverse_user_id AND lon BETWEEN "+str(lat_c-lat_range/2)+" AND "+str(lat_c+lat_range/2)+" AND (inner_x_diameter*pixel_scale) > 0 AND (inner_y_diameter*pixel_scale) > 0 AND score > 2;"
+sql = "SELECT lon, lat, (inner_x_diameter*pixel_scale) as width, (inner_y_diameter*pixel_scale) as height, ((outer_x_diameter-inner_x_diameter)*pixel_scale) as thickness, (angle % 90) as angle, score as score, pixel_scale as scale FROM bubbles, zooniverse_users WHERE bubbles.user_id = zooniverse_user_id AND lon BETWEEN "+str(lat_c-lat_range/2)+" AND "+str(lat_c+lat_range/2)+" AND (inner_x_diameter*pixel_scale) > 0 AND (inner_y_diameter*pixel_scale) > 0 AND score >= "+str(score)+";"
 cur.execute(sql)
 sqlres = []
 for row in cur.fetchall():
