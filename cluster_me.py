@@ -119,13 +119,17 @@ def get_mean_bubble(data):
     score = np.sum(data[:,6])
     return np.array([lon, lat, width, height, thick, angle, score])
 
-# Import data from CSV
+### Import data from CSV
+###
 # path_to_csv = "bubbles_26.csv"
 # bubbles = np.genfromtxt(path_to_csv, dtype=float, delimiter=',')
+###
+###
 
-# MySQL start...
+### Import data from MySQL
+###
 lat_c = 25
-lat_range = 2
+lat_range = 0.5
 score = 4
 db = pymysql.connect(host="localhost", user="root", passwd="", db="milkyway-development")
 cur = db.cursor() 
@@ -138,6 +142,8 @@ for row in cur.fetchall():
 db.close()
 bubbles = np.array(sqlres)
 bubbles = bubbles.astype(np.float)
+###
+###
 
 X = np.delete(bubbles, 0, 0)
 user_drawings = X
