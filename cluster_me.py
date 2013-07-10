@@ -4,6 +4,7 @@ import random
 import time
 import datetime
 import pymysql
+import os
 
 import numpy as np
 from scipy import spatial
@@ -121,19 +122,19 @@ def get_mean_bubble(data):
 
 ### Import data from CSV
 ###
-# path_to_csv = "bubbles_26.csv"
+# path_to_csv = "sample_data/bubbles_26.csv"
 # bubbles = np.genfromtxt(path_to_csv, dtype=float, delimiter=',')
 ###
 ###
 
 ### Import data from MySQL
 ###
-lat_c = 25
-lat_range = 0.5
+lon_c = 7.5
+lon_range = 2.0
 score = 4
 db = pymysql.connect(host="localhost", user="root", passwd="", db="milkyway-development")
 cur = db.cursor() 
-sql = "SELECT lon, lat, (inner_x_diameter*pixel_scale) as width, (inner_y_diameter*pixel_scale) as height, ((outer_x_diameter-inner_x_diameter)*pixel_scale) as thickness, (angle % 90) as angle, score as score, pixel_scale as scale FROM bubbles, zooniverse_users WHERE bubbles.user_id = zooniverse_user_id AND lon BETWEEN "+str(lat_c-lat_range/2)+" AND "+str(lat_c+lat_range/2)+" AND (inner_x_diameter*pixel_scale) > 0 AND (inner_y_diameter*pixel_scale) > 0 AND score >= "+str(score)+";"
+sql = "SELECT lon, lat, (inner_x_diameter*pixel_scale) as width, (inner_y_diameter*pixel_scale) as height, ((outer_x_diameter-inner_x_diameter)*pixel_scale) as thickness, (angle % 90) as angle, score as score, pixel_scale as scale FROM bubbles, zooniverse_users WHERE bubbles.user_id = zooniverse_user_id AND lon BETWEEN "+str(lon_c-lon_range/2)+" AND "+str(lon_c+lon_range/2)+" AND (inner_x_diameter*pixel_scale) > 0 AND (inner_y_diameter*pixel_scale) > 0 AND score >= "+str(score)+";"
 cur.execute(sql)
 sqlres = []
 for row in cur.fetchall():
@@ -219,6 +220,9 @@ for l in ls:
 			# pl.show()
 			ts = time.time()
 			stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
-			pl.savefig("output/cluster_me_"+str(lat_c)+"_"+str(l)+"_"+str(s)+"_"+str(r)+"_"+stamp+".png", dpi=300, bbox_inches='tight')
+			directory = "output/"+str(lon_c)+"/"
+			if not os.path.exists(directory):
+			    os.makedirs(directory)
+			pl.savefig(directory+"cluster_me_"+str(score)+"_"+str(l)+"_"+str(s)+"_"+str(r)+"_"+stamp+".png", dpi=300, bbox_inches='tight')
 			pl.close()
 
