@@ -10,6 +10,12 @@ import numpy as np
 from scipy import spatial
 from sklearn.cluster import DBSCAN
 
+def drange(start, stop, step):
+	r = start
+	while r < stop:
+		yield r
+		r += step
+
 def dbscan4bubbles(X,freedom_pos,freedom_size, freedom_rot):
 	
 	### DBSCAN META PARAMETERS
@@ -129,103 +135,101 @@ def get_mean_bubble(data):
 
 ### Import data from MySQL
 ###
-lon_c = 52
-lon_range = 2.0
+step = 1.0
+lons = drange(295, 360, step)
+lon_range = step*2.0
 score = 4
+l=0.25
+s=1.0
+r=45
+data = np.array([[0,0,0,0,0,0,0]])
 db = pymysql.connect(host="localhost", user="root", passwd="", db="milkyway-development")
 cur = db.cursor() 
-sql = "SELECT lon, lat, (inner_x_diameter*pixel_scale) as width, (inner_y_diameter*pixel_scale) as height, ((outer_x_diameter-inner_x_diameter)*pixel_scale) as thickness, (angle % 90) as angle, score as score, pixel_scale as scale FROM bubbles, zooniverse_users WHERE bubbles.user_id = zooniverse_user_id AND lon BETWEEN "+str(lon_c-lon_range/2)+" AND "+str(lon_c+lon_range/2)+" AND (inner_x_diameter*pixel_scale) > 0 AND (inner_y_diameter*pixel_scale) > 0 AND score >= "+str(score)+";"
-cur.execute(sql)
-sqlres = []
-for row in cur.fetchall():
-	sqlres.append(row)
+
+for lon_c in lons:
+	sql = "SELECT lon, lat, (inner_x_diameter*pixel_scale) as width, (inner_y_diameter*pixel_scale) as height, ((outer_x_diameter-inner_x_diameter)*pixel_scale) as thickness, (angle % 90) as angle, score as score, pixel_scale as scale FROM bubbles, zooniverse_users WHERE bubbles.user_id = zooniverse_user_id AND lon BETWEEN "+str(lon_c-lon_range/2)+" AND "+str(lon_c+lon_range/2)+" AND (inner_x_diameter*pixel_scale) > 0 AND (inner_y_diameter*pixel_scale) > 0 AND score >= "+str(score)+";"
+	cur.execute(sql)
+	sqlres = []
+	for row in cur.fetchall():
+		sqlres.append(row)
+
+	bubbles = np.array(sqlres)
+	bubbles = bubbles.astype(np.float)
+	###
+	###
+
+	X = np.delete(bubbles, 0, 0)
+	user_drawings = X
+	x1, x2 = min(X[:, 0]), max(X[:, 0])
+	y1, y2 = min(X[:, 1]), max(X[:, 1])
+
+	print('Scanning region around '+str(lon_c))
+	res = dbscan4bubbles(X,l,s,r)
+	data = np.concatenate((data,res))
 
 db.close()
-bubbles = np.array(sqlres)
-bubbles = bubbles.astype(np.float)
-###
-###
+data = np.delete(data, 0, 0)
+d = knn4bubbles(data)
 
-X = np.delete(bubbles, 0, 0)
-user_drawings = X
-x1, x2 = min(X[:, 0]), max(X[:, 0])
-y1, y2 = min(X[:, 1]), max(X[:, 1])
+print ('Saving output...')
+np.savetxt("DR2.csv", d, delimiter=",")
 
-# ls = [5,4,3,2,1,0.5,0.25,0.1]
-# ss = [0.1,0.25,0.5,1]
-# rs = [30,45,60,90]
+print('Drawing output...')
+import matplotlib.pylab as pl
+from pylab import figure, show, rand
+from matplotlib.patches import Ellipse
+import time
+import datetime
 
-ls = [0.25]
-ss = [1.0]
-rs = [45]
+## Create 'canvas' for map
+fig = pl.figure(figsize=(50, 50))
+ax = fig.add_subplot(111, aspect='equal')
+ax.set_xlim(data[:,0].max()+0.2, data[:,0].min()-0.2)
+ax.set_ylim(-1, 1)
 
-for l in ls:
-	for s in ss:
-		for r in rs:
-			print(l,s,r)
-			data = dbscan4bubbles(X,l,s,r)
-			d = knn4bubbles(data)
+#Plot original data
+# for xys in user_drawings:
+#     e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[5])
+#     e.set_clip_box(ax.bbox)
+#     e.set_alpha(0.01)
+#     e.set_facecolor('black')
+#     e.set_edgecolor('none')
+#     ax.add_artist(e)
 
-			print ('Saving output...')
-			np.savetxt("DR2.csv", d, delimiter=",")
+#Plot DBSCAN data
+for xys in data:
+    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[5])
+    e.set_clip_box(ax.bbox)
+    e.set_alpha(0.33)
+    e.set_facecolor('blue')
+    e.set_edgecolor('none')
+    ax.add_artist(e)
 
-			print('Drawing output...')
-			import matplotlib.pylab as pl
-			from pylab import figure, show, rand
-			from matplotlib.patches import Ellipse
-			import time
-			import datetime
+# Plot KNN-clustered bubbles
+for xys in d:
+    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[5])
+    e.set_clip_box(ax.bbox)
+    e.set_alpha(1)
+    e.set_facecolor([0.1, 0.1, 0.1])
+    e.set_facecolor('none')
+    e.set_edgecolor('red')
+    # e.set_lw(3)
+    ax.add_artist(e)
+for xys in d:
+    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2]+xys[4], height=xys[3]+xys[4], angle=xys[5])
+    e.set_clip_box(ax.bbox)
+    e.set_alpha(0.8)
+    e.set_facecolor([0.1, 0.1, 0.1])
+    e.set_facecolor('none')
+    e.set_edgecolor('red')
+    # e.set_lw(3)
+    ax.add_artist(e)
 
-			## Create 'canvas' for map
-			fig = pl.figure(figsize=(7, 7))
-			ax = fig.add_subplot(111, aspect='equal')
-			ax.set_xlim(data[:,0].max()+0.2, data[:,0].min()-0.2)
-			ax.set_ylim(-1, 1)
-
-			#Plot original data
-			for xys in user_drawings:
-			    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[5])
-			    e.set_clip_box(ax.bbox)
-			    e.set_alpha(0.01)
-			    e.set_facecolor('black')
-			    e.set_edgecolor('none')
-			    ax.add_artist(e)
-
-			#Plot DBSCAN data
-			for xys in data:
-			    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[5])
-			    e.set_clip_box(ax.bbox)
-			    e.set_alpha(0.33)
-			    e.set_facecolor('blue')
-			    e.set_edgecolor('none')
-			    ax.add_artist(e)
-
-			# Plot KNN-clustered bubbles
-			for xys in d:
-			    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[5])
-			    e.set_clip_box(ax.bbox)
-			    e.set_alpha(1)
-			    e.set_facecolor([0.1, 0.1, 0.1])
-			    e.set_facecolor('none')
-			    e.set_edgecolor('red')
-			    # e.set_lw(3)
-			    ax.add_artist(e)
-			for xys in d:
-			    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2]+xys[4], height=xys[3]+xys[4], angle=xys[5])
-			    e.set_clip_box(ax.bbox)
-			    e.set_alpha(0.8)
-			    e.set_facecolor([0.1, 0.1, 0.1])
-			    e.set_facecolor('none')
-			    e.set_edgecolor('red')
-			    # e.set_lw(3)
-			    ax.add_artist(e)
-
-			# pl.show()
-			ts = time.time()
-			stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
-			directory = "output/"+str(lon_c)+"/"
-			if not os.path.exists(directory):
-			    os.makedirs(directory)
-			pl.savefig(directory+"cluster_me_"+str(score)+"_"+str(l)+"_"+str(s)+"_"+str(r)+"_"+stamp+".png", dpi=300, bbox_inches='tight')
-			pl.close()
+ts = time.time()
+stamp = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
+directory = "output/DR2/"
+if not os.path.exists(directory):
+    os.makedirs(directory)
+pl.savefig(directory+"reduction_test_"+str(score)+"_"+str(l)+"_"+str(s)+"_"+str(r)+"_"+stamp+".png", dpi=300, bbox_inches='tight')
+pl.close()
 
