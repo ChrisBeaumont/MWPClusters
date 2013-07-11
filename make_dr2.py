@@ -23,7 +23,7 @@ def dbscan4bubbles(X,freedom_pos,freedom_size, freedom_rot):
 	B = np.column_stack([ X[:, 0]/freedom_pos, X[:, 1]/freedom_pos, (X[:, 0]/X[:, 2])/freedom_size, (X[:, 1]/X[:, 3])/freedom_size, (X[:, 4]/X[:,2])/freedom_size, X[:, 5]/freedom_rot ])
 	###
 
-	db = DBSCAN(eps=1, min_samples=3).fit(B)
+	db = DBSCAN(eps=1, min_samples=5).fit(B)
 	core_samples = db.core_sample_indices_
 	components = db.components_
 	labels = db.labels_
@@ -110,7 +110,7 @@ def knn4bubbles(data):
 		if xys.shape[0] < 2:
 			for bubbles in container.itervalues():
 				# mbubbles.append(np.mean(bubbles, axis=0))
-				mbubbles.append(get_mean_bubble(bubbles))
+				mbubbles.append(knn_get_mean_bubble(bubbles))
 			return np.array(mbubbles)
 
 def w_mean(data, x_index, w_index):
@@ -126,6 +126,37 @@ def get_mean_bubble(data):
     score = np.sum(data[:,6])
     return np.array([lon, lat, width, height, thick, angle, score])
 
+def knn_get_mean_bubble(data):
+    lon = w_mean(data, 0, 6)
+    lat = w_mean(data, 1, 6)
+    width = w_mean(data, 2, 6)
+    height = w_mean(data, 3, 6)
+    thick = w_mean(data, 4, 6)
+    angle = w_mean(data, 5, 6)
+    score = np.sum(data[:,6])
+
+    if width>=height:
+    	Rin = width/2
+    	rin = height/2
+    	Rout = (width+thick)/2
+    	rout = (height+thick)/2
+    else:
+    	rin = width/2
+    	Rin = height/2
+    	rout = (width+thick)/2
+    	Rout = (height+thick)/2
+
+    r_eff = 60*(math.sqrt(Rin*rin) + math.sqrt(Rout*rout))/2
+    thickness = (math.sqrt(Rout*rout) - math.sqrt(Rin*rin))*60
+    e = math.sqrt(Rin*Rin - rin*rin)/Rin
+
+    if lon>180:
+    	abslon=lon-360
+    else:
+    	abslon=lon
+
+    return np.array([lon, lat, width, height, r_eff, thickness, e, angle, score, abslon])
+
 ### Import data from CSV
 ###
 # path_to_csv = "sample_data/bubbles_26.csv"
@@ -135,11 +166,11 @@ def get_mean_bubble(data):
 
 ### Import data from MySQL
 ###
-step = 1.0
-lons = drange(295, 360, step)
+step = 0.5
+lons = drange(15, 25, step)
 lon_range = step*2.0
-score = 4
-l=0.25
+score = 3
+l=1.0
 s=1.0
 r=45
 data = np.array([[0,0,0,0,0,0,0]])
@@ -147,7 +178,7 @@ db = pymysql.connect(host="localhost", user="root", passwd="", db="milkyway-deve
 cur = db.cursor() 
 
 for lon_c in lons:
-	sql = "SELECT lon, lat, (inner_x_diameter*pixel_scale) as width, (inner_y_diameter*pixel_scale) as height, ((outer_x_diameter-inner_x_diameter)*pixel_scale) as thickness, (angle % 90) as angle, score as score, pixel_scale as scale FROM bubbles, zooniverse_users WHERE bubbles.user_id = zooniverse_user_id AND lon BETWEEN "+str(lon_c-lon_range/2)+" AND "+str(lon_c+lon_range/2)+" AND (inner_x_diameter*pixel_scale) > 0 AND (inner_y_diameter*pixel_scale) > 0 AND score >= "+str(score)+";"
+	sql = "SELECT lon, lat, (inner_x_diameter*pixel_scale) as width, (inner_y_diameter*pixel_scale) as height, ((outer_x_diameter-inner_x_diameter)*pixel_scale) as thickness, (angle % 90) as angle, score as score, pixel_scale as scale FROM bubbles, zooniverse_users WHERE bubbles.user_id = zooniverse_user_id AND lon BETWEEN "+str(lon_c-lon_range/2)+" AND "+str(lon_c+lon_range/2)+" AND (inner_x_diameter/pixel_scale) >= 20 AND (inner_y_diameter/pixel_scale) >= 20 AND score >= "+str(score)+";"
 	cur.execute(sql)
 	sqlres = []
 	for row in cur.fetchall():
@@ -182,7 +213,7 @@ import time
 import datetime
 
 ## Create 'canvas' for map
-fig = pl.figure(figsize=(50, 50))
+fig = pl.figure(figsize=(15, 15))
 ax = fig.add_subplot(111, aspect='equal')
 ax.set_xlim(data[:,0].max()+0.2, data[:,0].min()-0.2)
 ax.set_ylim(-1, 1)
@@ -207,7 +238,7 @@ for xys in data:
 
 # Plot KNN-clustered bubbles
 for xys in d:
-    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[5])
+    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2], height=xys[3], angle=xys[7])
     e.set_clip_box(ax.bbox)
     e.set_alpha(1)
     e.set_facecolor([0.1, 0.1, 0.1])
@@ -216,7 +247,7 @@ for xys in d:
     # e.set_lw(3)
     ax.add_artist(e)
 for xys in d:
-    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2]+xys[4], height=xys[3]+xys[4], angle=xys[5])
+    e = Ellipse(xy=[xys[0], xys[1]], width=xys[2]+(2*xys[5]/60), height=xys[3]+(2*xys[5]/60), angle=xys[7])
     e.set_clip_box(ax.bbox)
     e.set_alpha(0.8)
     e.set_facecolor([0.1, 0.1, 0.1])

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ContentFilters</key>
+	<dict/>
+	<key>auto_connect</key>
+	<true/>
+	<key>data</key>
+	<dict>
+		<key>connection</key>
+		<dict>
+			<key>database</key>
+			<string>milkyway-development</string>
+			<key>host</key>
+			<string>127.0.0.1</string>
+			<key>kcid</key>
+			<string>-15163249</string>
+			<key>name</key>
+			<string>localhost</string>
+			<key>rdbms_type</key>
+			<string>mysql</string>
+			<key>sslCACertFileLocation</key>
+			<string></string>
+			<key>sslCACertFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>sslCertificateFileLocation</key>
+			<string></string>
+			<key>sslCertificateFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>sslKeyFileLocation</key>
+			<string></string>
+			<key>sslKeyFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>type</key>
+			<string>SPTCPIPConnection</string>
+			<key>useSSL</key>
+			<integer>0</integer>
+			<key>user</key>
+			<string>root</string>
+		</dict>
+		<key>session</key>
+		<dict>
+			<key>connectionEncoding</key>
+			<string>utf8</string>
+			<key>contentPageNumber</key>
+			<integer>1</integer>
+			<key>contentSelection</key>
+			<data>
+			YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFy
+			Y2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJX
+			TlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAF
+			gAdUdHlwZVRyb3dzXxAdU2VsZWN0aW9uRGV0YWlsVHlwZU5TSW5k
+			ZXhTZXTSFwsYGVxOU1JhbmdlQ291bnQQAIAG0hscHR5aJGNsYXNz
+			bmFtZVgkY2xhc3Nlc1pOU0luZGV4U2V0oh8gWk5TSW5kZXhTZXRY
+			TlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVk
+			QXJjaGl2ZXLRJidUZGF0YYABAAgAEQAaACMALQAyADcAQABGAE0A
+			VQBgAGcAagBsAG4AcQBzAHUAdwB8AIEAoQCmALMAtQC3ALwAxwDQ
+			ANsA3gDpAPIA9wEEAQcBGQEcASEAAAAAAAACAQAAAAAAAAAoAAAA
+			AAAAAAAAAAAAAAABIw==
+			</data>
+			<key>contentSortColIsAsc</key>
+			<true/>
+			<key>contentViewport</key>
+			<string>{{0, 0}, {693, 456}}</string>
+			<key>isToolbarVisible</key>
+			<true/>
+			<key>queries</key>
+			<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, outer_x_diameter, 60*(POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, 60*(POW((outer_x_diameter*(inner_y_diameter+(outer_x_diameter-inner_x_diameter)))/2, 0.5)-POW((inner_y_diameter*inner_x_diameter)/2, 0.5)) as thickness, CASE WHEN inner_x_diameter&gt;inner_y_diameter THEN (POW((POW(inner_x_diameter/2,2)-POW(inner_y_diameter/2,2)),0.5)/(inner_x_diameter/2)) ELSE (POW((POW(inner_y_diameter/2,2)-POW(inner_x_diameter/2,2)),0.5)/(inner_y_diameter/2)) END as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+			<key>view</key>
+			<string>SP_VIEW_CUSTOMQUERY</string>
+			<key>windowVerticalDividerPosition</key>
+			<real>185</real>
+		</dict>
+	</dict>
+	<key>encrypted</key>
+	<false/>
+	<key>format</key>
+	<string>connection</string>
+	<key>queryFavorites</key>
+	<array/>
+	<key>queryHistory</key>
+	<array>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, outer_x_diameter, 60*(POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, 60*(POW((outer_x_diameter*(inner_y_diameter+(outer_x_diameter-inner_x_diameter)))/2, 0.5)-POW((inner_y_diameter*inner_x_diameter)/2, 0.5)) as thickness, CASE WHEN inner_x_diameter&gt;inner_y_diameter THEN (POW((POW(inner_x_diameter/2,2)-POW(inner_y_diameter/2,2)),0.5)/(inner_x_diameter/2)) ELSE (POW((POW(inner_y_diameter/2,2)-POW(inner_x_diameter/2,2)),0.5)/(inner_y_diameter/2)) END as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, outer_x_diameter, 60*(POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, POW((outer_x_diameter*(inner_y_diameter+(outer_x_diameter-inner_x_diameter)))/2, 0.5)-POW((inner_y_diameter*inner_x_diameter)/2, 0.5)*60 as thickness, CASE WHEN inner_x_diameter&gt;inner_y_diameter THEN (POW((POW(inner_x_diameter/2,2)-POW(inner_y_diameter/2,2)),0.5)/(inner_x_diameter/2)) ELSE (POW((POW(inner_y_diameter/2,2)-POW(inner_x_diameter/2,2)),0.5)/(inner_y_diameter/2)) END as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, outer_x_diameter, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, POW((outer_x_diameter*(inner_y_diameter+(outer_x_diameter-inner_x_diameter)))/2, 0.5)-POW((inner_y_diameter*inner_x_diameter)/2, 0.5) as thickness, CASE WHEN inner_x_diameter&gt;inner_y_diameter THEN (POW((POW(inner_x_diameter/2,2)-POW(inner_y_diameter/2,2)),0.5)/(inner_x_diameter/2)) ELSE (POW((POW(inner_y_diameter/2,2)-POW(inner_x_diameter/2,2)),0.5)/(inner_y_diameter/2)) END as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, outer_x_diameter, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, POW((outer_x_diameter*(inner_y_diameter+(outer_x_diameter-inner_x_diameter)))/2, 0.5)-POW((inner_y_diameter*inner_x_diameter)/2, 0.5) as thickness, (POW((POW(inner_x_diameter/2,2)-POW(inner_y_diameter/2,2)),0.5)/(inner_x_diameter/2)) as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, outer_x_diameter, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, POW((outer_x_diameter*(inner_y_diameter+(outer_x_diameter-inner_x_diameter)))/2, 0.5)-POW((inner_y_diameter*inner_x_diameter)/2, 0.5) as thickness, (0.00+POW((POW(inner_x_diameter/2,2)-POW(inner_y_diameter/2,2)),0.5)/(inner_x_diameter/2)) as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, outer_x_diameter, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, POW((outer_x_diameter*(inner_y_diameter+(outer_x_diameter-inner_x_diameter)))/2, 0.5)-POW((inner_y_diameter*inner_x_diameter)/2, 0.5) as thickness, (0+POW((POW(inner_x_diameter/2,2)-POW(inner_y_diameter/2,2)),0.5)/(inner_x_diameter/2)) as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, outer_x_diameter, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, POW((outer_x_diameter*(inner_y_diameter+(outer_x_diameter-inner_x_diameter)))/2, 0.5)-POW((inner_y_diameter*inner_x_diameter)/2, 0.5) as thickness, POW((POW(inner_x_diameter/2,2)-POW(inner_y_diameter/2,2)),0.5)/(inner_x_diameter/2) as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, outer_x_diameter, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, POW((outer_x_diameter*(inner_y_diameter+(outer_x_diameter-inner_x_diameter)))/2, 0.5)-POW((inner_y_diameter*inner_x_diameter)/2, 0.5) as thickness, POW((POW(inner_x_diameter,2)-POW(inner_y_diameter,2)),0.5)/inner_x_diameter as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, POW((outer_x_diameter*(inner_y_diameter+(outer_x_diameter-inner_x_diameter)))/2, 0.5)-POW((inner_y_diameter*inner_x_diameter)/2, 0.5) as thickness, POW((POW(inner_x_diameter,2)-POW(inner_y_diameter,2)),0.5)/inner_x_diameter as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, (POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5)-POW((outer_x_diameter*inner_x_diameter)/2, 0.5)) as thickness, POW((POW(inner_x_diameter,2)-POW(inner_y_diameter,2)),0.5)/inner_x_diameter as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, (POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5)-POW((outer_x_diameter*inner_x_diameter)/2, 0.5)) as thickness, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, (POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5)-POW((outer_x_diameter*inner_x_diameter)/2, 0.5)) as thickness, POW((POW(inner_x_diameter)-POW(inner_y_diameter)),0.5)/inner_x_diameter as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, (POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5)-POW((outer_x_diameter*inner_x_diameter)/2, 0.5)) as thickness, POW(POW(inner_x_diameter)-POW(inner_y_diameter),0.5)/inner_x_diameter as e, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, inner_x_diameter, inner_y_diameter, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2 as r_eff, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, (POW((outer_x_diameter*inner_x_diameter)/2, 0.5)+POW(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, (((outer_x_diameter*inner_x_diameter)/2, 0.5)+(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5)), angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, ((((outer_x_diameter*inner_x_diameter)/2, 0.5)+(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5)), angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, (((((outer_x_diameter*inner_x_diameter)/2, 0.5)+(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2), angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+		<string>SELECT id, cat_id, lat, lon, ((((outer_x_diameter*inner_x_diameter)/2, 0.5)+(((inner_y_diameter+(outer_x_diameter-inner_x_diameter))*inner_y_diameter)/2, 0.5))/2, angle, dispersion 
+FROM clean_bubbles WHERE cat_id IS NOT NULL</string>
+	</array>
+	<key>rdbms_type</key>
+	<string>mysql</string>
+	<key>rdbms_version</key>
+	<string>5.1.48-log</string>
+	<key>version</key>
+	<integer>1</integer>
+</dict>
+</plist>
