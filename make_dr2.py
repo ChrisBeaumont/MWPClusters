@@ -23,7 +23,7 @@ def dbscan4bubbles(X,freedom_pos,freedom_size, freedom_rot):
 	B = np.column_stack([ X[:, 0]/freedom_pos, X[:, 1]/freedom_pos, (X[:, 0]/X[:, 2])/freedom_size, (X[:, 1]/X[:, 3])/freedom_size, (X[:, 4]/X[:,2])/freedom_size, X[:, 5]/freedom_rot ])
 	###
 
-	db = DBSCAN(eps=1, min_samples=5).fit(B)
+	db = DBSCAN(eps=1, min_samples=3).fit(B)
 	core_samples = db.core_sample_indices_
 	components = db.components_
 	labels = db.labels_
@@ -166,11 +166,13 @@ def knn_get_mean_bubble(data):
 
 ### Import data from MySQL
 ###
-step = 0.5
-lons = drange(15, 25, step)
+step = 1.0
+# lons = drange(18.0, 20.0, step) #Sample1
+# lons = drange(50.0, 53.0, step) #Sample2
+lons = drange(11.5, 13.5, step) #Sample3
 lon_range = step*2.0
-score = 3
-l=1.0
+score = 4
+l=0.05
 s=1.0
 r=45
 data = np.array([[0,0,0,0,0,0,0]])
@@ -213,7 +215,7 @@ import time
 import datetime
 
 ## Create 'canvas' for map
-fig = pl.figure(figsize=(15, 15))
+fig = pl.figure(figsize=(20, 20))
 ax = fig.add_subplot(111, aspect='equal')
 ax.set_xlim(data[:,0].max()+0.2, data[:,0].min()-0.2)
 ax.set_ylim(-1, 1)
